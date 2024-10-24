@@ -1,37 +1,43 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { useFonts } from "expo-font";
+import { Poppins_400Regular, Poppins_300Light, Poppins_400Regular_Italic, Poppins_600SemiBold, Poppins_600SemiBold_Italic} from '@expo-google-fonts/poppins'
+import { AllertaStencil_400Regular } from '@expo-google-fonts/allerta-stencil'
+import { ArchitectsDaughter_400Regular } from '@expo-google-fonts/architects-daughter'
+import { SplashScreen, Stack } from "expo-router";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useEffect } from "react";
+import TrackPlayer from "react-native-track-player";
+import { PlaybackService } from "@/services/audio-player";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+const streamingUrl = "http://78.129.132.7:7708/;";
+
+TrackPlayer.registerPlaybackService(() => PlaybackService);
+
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+
+  const [loaded, error] = useFonts({
+    Poppins_400Regular, 
+    Poppins_400Regular_Italic, 
+    Poppins_600SemiBold_Italic, 
+    Poppins_600SemiBold, 
+    Poppins_300Light, 
+    ArchitectsDaughter_400Regular,
+    AllertaStencil_400Regular
   });
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+      if (loaded || error) {
+        SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, error]);
 
-  if (!loaded) {
+  if (!loaded && !error) {
     return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <Stack screenOptions={{headerShown: false}}>
+      <Stack.Screen name="(home)" />
+    </Stack>
   );
 }
